@@ -1,0 +1,87 @@
+services:
+  #Minio
+  minio_ebook:
+    image: minio/minio
+    container_name: minio_ebook
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_SERVER_URL: "http://${HOSTNAME}:9000"
+      MINIO_BROWSER_REDIRECT_URL: "http://${HOSTNAME}:9001"
+    volumes:
+      - ./volumes/minio_data:/data
+    command: server --console-address ":9001" /data
+    networks:
+      july:
+        aliases:
+          - ${HOSTNAME}
+
+  #Redis
+  redis_ebook:
+    image: docker.io/redis:7.2.3
+    container_name: redis_ebook
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./volumes/redis_ebook-data:/data
+    networks:
+      - july
+
+  kafka_ebook:
+    image: bitnami/kafka:3.7.0
+    container_name: kafka_ebook
+    hostname: kafka_ebook
+    ports:
+      - '9094:9094'
+    environment:
+      - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka_ebook:9093
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka_ebook:9092,EXTERNAL://localhost:9094
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+    networks:   
+      - july
+
+  elasticsearch_ebook:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.1
+    container_name: elasticsearch_ebook
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - ./volumes/elasticsearch_data:/usr/share/elasticsearch_ebook/data
+    networks:
+      - july
+
+  kibana_ebook:
+    image: docker.elastic.co/kibana/kibana:8.12.1
+    container_name: kibana_ebook
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch_ebook:9200
+      - ELASTICSEARCH_URL=http://elasticsearch_ebook:9200
+    depends_on:
+      - elasticsearch_ebook
+    networks:
+      - july
+
+volumes:
+  elasticsearch_data:
+    name: elasticsearch_ebook
+  minio_data:
+    name: minio_ebook
+
+
+networks:
+  july:
+    driver: bridge
