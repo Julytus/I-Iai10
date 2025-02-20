@@ -40,7 +40,9 @@ public class SecurityConfig {
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(
-                                jwtAuthenticationConverter())))
+                                jwtAuthenticationConverter()))
+                        .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
+                        .accessDeniedHandler(new CustomAccessDeniedHandler()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults());
         return http.build();

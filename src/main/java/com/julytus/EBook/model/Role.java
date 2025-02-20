@@ -11,6 +11,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
 @Setter
-public class Role extends BaseEntity<Integer> {
+public class Role extends BaseEntity<String> {
     String name;
 }
