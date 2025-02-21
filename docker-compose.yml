@@ -20,7 +20,7 @@ services:
           - ${HOSTNAME}
 
   #Redis
-  redis_ebook:
+  redis:
     image: docker.io/redis:7.2.3
     container_name: redis_ebook
     restart: always
@@ -31,7 +31,7 @@ services:
     networks:
       - july
 
-  kafka_ebook:
+  kafka:
     image: bitnami/kafka:3.7.0
     container_name: kafka_ebook
     hostname: kafka_ebook
@@ -48,7 +48,7 @@ services:
     networks:   
       - july
 
-  elasticsearch_ebook:
+  elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.12.1
     container_name: elasticsearch_ebook
     environment:
@@ -62,7 +62,7 @@ services:
     networks:
       - july
 
-  kibana_ebook:
+  kibana:
     image: docker.elastic.co/kibana/kibana:8.12.1
     container_name: kibana_ebook
     ports:
@@ -71,10 +71,40 @@ services:
       - ELASTICSEARCH_HOSTS=http://elasticsearch_ebook:9200
       - ELASTICSEARCH_URL=http://elasticsearch_ebook:9200
     depends_on:
-      - elasticsearch_ebook
+      - elasticsearch
     networks:
       - july
 
+  mysql:
+    image: mysql:8.1.0
+    container_name: mysql_ebook
+    restart: always
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+      MYSQL_ROOT_HOST: "%"
+    ports:
+      - "3306:3306"
+    networks:
+      - july
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin_ebook
+    environment:
+      PMA_HOST: mysql_ebook
+      PMA_USER: root
+      PMA_PASSWORD: ""
+    ports:
+      - "8081:80"
+    depends_on:
+      - mysql
+    networks:
+      - july
 volumes:
   elasticsearch_data:
     name: elasticsearch_ebook
