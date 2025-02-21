@@ -5,10 +5,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import com.julytus.EBook.exception.AppException;
 import com.julytus.EBook.exception.ErrorCode;
-import com.nimbusds.jose.JOSEException;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,8 +15,6 @@ import org.springframework.security.oauth2.jwt.*;
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import com.nimbusds.jose.util.Base64;
-
-import java.text.ParseException;
 
 @Configuration
 @Slf4j(topic = "JWT-DECODER")
@@ -69,15 +64,11 @@ public class JwtConfig {
     private JwtDecoder getJwtDecoder(NimbusJwtDecoder jwtDecoder) {
         return token -> {
             try {
-                boolean isValid = true; // check BlackList
-                if(isValid) {
-                    return jwtDecoder.decode(token);
-                }
+                return jwtDecoder.decode(token);
             } catch (Exception e) {
                 log.error("Jwt decoder: Token invalid");
                 throw new AppException(ErrorCode.TOKEN_INVALID);
             }
-            throw new JwtException("Invalid token");
         };
     }
 }
