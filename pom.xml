@@ -29,8 +29,14 @@
 	<properties>
 		<java.version>21</java.version>
 		<minio.version>8.4.3</minio.version>
+		<swagger.version>2.5.0</swagger.version>
 	</properties>
 	<dependencies>
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>${swagger.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>com.mysql</groupId>

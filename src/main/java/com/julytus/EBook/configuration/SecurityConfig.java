@@ -1,5 +1,6 @@
 package com.julytus.EBook.configuration;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -21,7 +22,9 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+    private final JwtDecoderCustomizer decoder;
     private static final String[] WHITELIST = {
             "/api/v1/auth/**",
             "/api/v1/users-creation",
@@ -29,7 +32,17 @@ public class SecurityConfig {
             "/api/v1/books-search-specification/**",
             "/api/v1/books-search-criteria/**",
             "/api/v1/books-search-keyword/**",
-            "/api/v1/books/{id}"
+            "/api/v1/books/{id}",
+            "/swagger-ui/**",
+            "/swagger-ui.html",
+            "/webjars/swagger-ui/**",
+            "/swagger-ui/index.html",
+            "/v3/api-docs",
+            "/v3/api-docs/swagger-config",
+            "/api-docs/**",
+            "/swagger-resources",
+            "/swagger-resources/**",
+
     };
 
     @Bean
@@ -39,8 +52,9 @@ public class SecurityConfig {
                         .requestMatchers(WHITELIST).permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(jwt -> jwt.jwtAuthenticationConverter(
-                                jwtAuthenticationConverter()))
+                        .jwt(jwt -> jwt
+                                .decoder(decoder)
+                                .jwtAuthenticationConverter(jwtAuthenticationConverter()))
                         .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                         .accessDeniedHandler(new CustomAccessDeniedHandler()))
                 .csrf(AbstractHttpConfigurer::disable)

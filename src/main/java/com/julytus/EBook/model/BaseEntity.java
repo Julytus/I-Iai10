@@ -28,10 +28,4 @@ public abstract class BaseEntity<T extends Serializable> implements Serializable
 
     @UpdateTimestamp
     LocalDateTime updatedAt;
-
-    @CreatedBy
-    String createdBy;
-
-    @LastModifiedBy
-    String updateBy;
 }
