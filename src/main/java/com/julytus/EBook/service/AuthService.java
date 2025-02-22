@@ -8,7 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.CookieValue;
 
 public interface AuthService {
-    SignInResponse SignIn(SignInRequest request, HttpServletResponse response);
+    SignInResponse signIn(SignInRequest request, HttpServletResponse response);
     RefreshTokenResponse refreshToken(@CookieValue(name = "refreshToken") String refreshToken);
     void logout(LogoutRequest request, HttpServletResponse response);
 }

@@ -9,6 +9,6 @@ import java.io.Serializable;
 @Setter
 @Builder
 public class RefreshTokenResponse implements Serializable {
-    private Long userId;
+    private String userId;
     private String accessToken;
 }

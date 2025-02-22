@@ -1,15 +1,17 @@
 package com.julytus.EBook.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.AccessLevel;
 import lombok.Getter;
-import java.io.Serializable;
+import lombok.experimental.FieldDefaults;
 
 @Getter
-public class SignInRequest implements Serializable {
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class SignInRequest {
 
     @NotBlank(message = "Email cannot be blank")
-    private String email;
+    String email;
 
     @NotBlank(message = "Password cannot be blank")
-    private String password;
+    String password;
 }
