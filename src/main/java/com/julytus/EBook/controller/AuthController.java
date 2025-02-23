@@ -1,7 +1,7 @@
 package com.julytus.EBook.controller;
 
 import com.julytus.EBook.dto.request.SignInRequest;
-import com.julytus.EBook.dto.request.UserRequest;
+import com.julytus.EBook.dto.request.SignUpRequest;
 import com.julytus.EBook.dto.response.ResponseData;
 import com.julytus.EBook.dto.response.SignInResponse;
 import com.julytus.EBook.dto.response.UserResponse;
@@ -35,7 +35,7 @@ public class AuthController {
     }
 
     @PostMapping("/sign-up")
-    ResponseData<UserResponse> signUp(@RequestBody @Valid UserRequest request) {
+    ResponseData<UserResponse> signUp(@RequestBody @Valid SignUpRequest request) {
         var result = userService.createUser(request);
 
         return ResponseData.<UserResponse>builder()

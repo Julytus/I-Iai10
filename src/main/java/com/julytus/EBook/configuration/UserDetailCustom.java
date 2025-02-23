@@ -21,7 +21,7 @@ public class UserDetailCustom implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        com.julytus.EBook.model.User user = userService.findByEmail(username);
+        com.julytus.EBook.model.User user = userService.findByUsername(username);
 
         return new User(
                 user.getUsername(),

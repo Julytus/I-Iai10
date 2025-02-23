@@ -6,10 +6,10 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.jwt.JwtEncodingException;
 import org.springframework.stereotype.Service;
 
-import com.julytus.EBook.common.EnvVariable;
 import com.julytus.EBook.exception.AppException;
 import com.julytus.EBook.exception.ErrorCode;
 import com.julytus.EBook.model.User;
@@ -35,6 +35,18 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtServiceImpl implements JwtService {
     private final RedisService redisService;
 
+    @Value("${jwt.secret-key-access-token}")
+    private String secretKeyAccessToken;
+
+    @Value("${jwt.expiration-access-token}")
+    private int expirationAccessToken;
+
+    @Value("${jwt.secret-key-refresh-token}")
+    private String secretKeyRefreshToken;
+
+    @Value("${jwt.expiration-refresh-token}")
+    private int expirationRefreshToken;
+
     @Override
     public String generateAccessToken(User user) {
         try {
@@ -44,14 +56,14 @@ public class JwtServiceImpl implements JwtService {
                     .subject(user.getEmail())
                     .issuer("JulyTus")
                     .issueTime(new Date())
-                    .expirationTime(Date.from(Instant.now()
-                        .plus(EnvVariable.getExpirationAccessToken(), ChronoUnit.SECONDS)))
+                    .expirationTime(new Date(Instant.now()
+                            .plus(expirationAccessToken, ChronoUnit.SECONDS).toEpochMilli()))
                     .jwtID(UUID.randomUUID().toString())
                     .claim("role", user.getRole().getName())
                     .build();
 
             JWSObject jwsObject = new JWSObject(header, new Payload(claimsSet.toJSONObject()));
-            jwsObject.sign(new MACSigner(EnvVariable.getSecretKeyAccessToken()));
+            jwsObject.sign(new MACSigner(secretKeyAccessToken));
 
             return jwsObject.serialize();
         } catch (JOSEException e) {
@@ -69,13 +81,13 @@ public class JwtServiceImpl implements JwtService {
                     .subject(user.getEmail())
                     .issuer("JulyTus")
                     .issueTime(new Date())
-                    .expirationTime(Date.from(Instant.now()
-                        .plus(EnvVariable.getExpirationRefreshToken(), ChronoUnit.SECONDS)))
+                    .expirationTime(new Date(Instant.now()
+                            .plus(expirationRefreshToken, ChronoUnit.SECONDS).toEpochMilli()))
                     .jwtID(UUID.randomUUID().toString())
                     .build();
 
             JWSObject jwsObject = new JWSObject(header, new Payload(claimsSet.toJSONObject()));
-            jwsObject.sign(new MACSigner(EnvVariable.getSecretKeyRefreshToken()));
+            jwsObject.sign(new MACSigner(secretKeyRefreshToken));
 
             return jwsObject.serialize();
         } catch (JOSEException e) {

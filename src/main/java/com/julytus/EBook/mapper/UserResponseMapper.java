@@ -8,7 +8,6 @@ public class UserResponseMapper {
         return UserResponse
                 .builder()
                 .id(user.getId())
-                .age(user.getAge())
                 .email(user.getEmail())
                 .avatarUrl(user.getAvatarUrl())
                 .birthday(user.getBirthday())

@@ -1,6 +1,7 @@
 package com.julytus.EBook.model;
 
 import com.julytus.EBook.common.UserStatus;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import lombok.*;
@@ -31,9 +32,8 @@ public class User extends BaseEntity<String> implements UserDetails {
 
     String phoneNumber;
 
+    @Column(columnDefinition = "VARCHAR(1000)")
     String avatarUrl;
-
-    Integer age;
 
     LocalDate birthday;
 
