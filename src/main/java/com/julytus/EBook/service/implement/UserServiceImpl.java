@@ -75,7 +75,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new JwtAuthenticationException(ErrorCode.ACCESS_DINED));
 
         User user = findByUsername(username);
-        String avatarUrl = fileProcessor.uploadFile(file);
+        String avatarUrl = fileProcessor.uploadAvatar(file, username);
         user.setAvatarUrl(avatarUrl);
 
         return UserResponseMapper.fromUser(userRepository.save(user));

@@ -1,26 +1,22 @@
 package com.julytus.EBook.service.implement;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import com.julytus.EBook.exception.AppException;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.julytus.EBook.exception.AppException;
 import com.julytus.EBook.exception.ErrorCode;
 import com.julytus.EBook.service.FileProcessor;
 
-import io.minio.BucketExistsArgs;
-import io.minio.GetPresignedObjectUrlArgs;
-import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
-import io.minio.http.Method;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j(topic = "FILE-PROCESSOR")
@@ -28,16 +24,39 @@ import lombok.RequiredArgsConstructor;
 public class FileProcessorImpl implements FileProcessor {
     private final MinioClient minioClient;
 
-    @Value("${minio.bucket}")
-    private String bucket;
+    @Value("${minio.avatar-bucket}")
+    private String avatarBucket;
+
+    @Value("${minio.cover-image-bucket}")
+    private String coverImageBucket;
+
+    @Value("${minio.url}")
+    private String minioUrl;
 
     @Override
-    public String uploadFile(MultipartFile file) {
+    public String uploadAvatar(MultipartFile file, String username) {
+        String fileName = username + "/" + StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()))
+                + "_" + UUID.randomUUID();
+
+        return uploadImageToMinio(file, avatarBucket, fileName);
+    }
+
+    @Override
+    public String uploadCoverImage(MultipartFile file, String title) {
+        String fileName =title + "/" + StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()))
+                + "_" + UUID.randomUUID();
+
+        return uploadImageToMinio(file, coverImageBucket, fileName);
+    }
+
+    @Override
+    public String uploadChapter(List<MultipartFile> files) {
+        return "";
+    }
+
+    private String uploadImageToMinio(MultipartFile file, String bucket, String fileName) {
         try {
             validateImageFile(file);
-
-            String fileName = UUID.randomUUID() + "_"
-                    + StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
 
             minioClient.putObject(
                     PutObjectArgs.builder()
@@ -47,28 +66,11 @@ public class FileProcessorImpl implements FileProcessor {
                             .contentType(file.getContentType())
                             .build()
             );
-            return minioClient.getPresignedObjectUrl(
-                    GetPresignedObjectUrlArgs.builder()
-                            .bucket(bucket)
-                            .object(fileName)
-                            .method(Method.GET)
-                            .build()
-            );
+
+            // Trả về URL public
+            return String.format("%s/%s/%s", minioUrl, bucket, fileName);
         } catch (Exception e) {
             throw new AppException(ErrorCode.FILE_UPLOAD_FAILED);
-        }
-    }
-
-    @PostConstruct
-    private void init() {
-        try {
-            boolean found = minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucket).build());
-            if (!found) {
-                minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucket).build());
-            }
-        } catch (Exception e) {
-            log.error("Failed to initialize MinIO bucket: {}", e.getMessage());
-            throw new AppException(ErrorCode.STORAGE_INITIALIZATION_FAILED);
         }
     }
 

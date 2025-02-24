@@ -21,15 +21,14 @@ public class Book extends BaseEntity<String> {
     @Column(nullable = false, columnDefinition = "TEXT")
     String description;
 
-    @Column(nullable = false)
-    String publisher;
-
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "VARCHAR(1000)")
     String coverImage;
 
+    String author;
+
     @ColumnDefault("0")
-    private Long views;
+    Long views;
 
     @ManyToOne(optional = false)
-    private User author;
+    User managedBy;
 }

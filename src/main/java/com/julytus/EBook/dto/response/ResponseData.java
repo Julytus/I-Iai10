@@ -2,6 +2,7 @@ package com.julytus.EBook.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.io.Serializable;
 
@@ -11,8 +12,9 @@ import java.io.Serializable;
 @Setter
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ResponseData<T> implements Serializable {
-    private int code;
-    private String message;
-    private T data;
+    int code;
+    String message;
+    T data;
 }

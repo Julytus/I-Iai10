@@ -1,21 +1,29 @@
 package com.julytus.EBook.model;
 
-import com.julytus.EBook.common.UserStatus;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import com.julytus.EBook.common.UserStatus;
+
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.FieldDefaults;
+
 @Entity
+@Table(indexes = {
+        @Index(name = "idx_user_email", columnList = "email", unique = true)
+})
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -26,6 +34,7 @@ public class User extends BaseEntity<String> implements UserDetails {
 
     String fullName;
 
+    @Column(unique = true)
     String email;
 
     String password;

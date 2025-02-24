@@ -23,7 +23,9 @@ minio:
   url: ${MINIO_URL:http://localhost:9000}
   access-key: ${MINIO_ACCESS_KEY:minioadmin}
   secret-key: ${MINIO_SECRET_KEY:minioadmin}
-  bucket: ${MINIO_BUCKET:e-book}
+  avatar-bucket: ${AVATAR_BUKET:avatar}
+  cover-image-bucket: ${COVER_IMAGE_BUCKET:cover-image}
+  chapter-bucket: ${CHAPTER_BUCKET:chapter}
 
 jwt:
   expiration-access-token: ${EXPIRATION_AT:3000}
