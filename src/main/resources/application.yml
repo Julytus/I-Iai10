@@ -23,10 +23,14 @@ minio:
   url: ${MINIO_URL:http://localhost:9000}
   access-key: ${MINIO_ACCESS_KEY:minioadmin}
   secret-key: ${MINIO_SECRET_KEY:minioadmin}
-  bucket: ${MINIO_BUCKET:EBook}
+  avatar-bucket: ${AVATAR_BUKET:avatar}
+  cover-image-bucket: ${COVER_IMAGE_BUCKET:cover-image}
+  chapter-bucket: ${CHAPTER_BUCKET:chapter}
 
 jwt:
   expiration-access-token: ${EXPIRATION_AT:3000}
   expiration-refresh-token: ${EXPIRATION_RT:5184000} #60 days = 60 * 24 * 60 * 60
   secret-key-access-token: ${SECRET_KET_AT:TuAnD3pZa1Jyl3use1/ChT3uaD1PZa4V0ick+T84IABvc}
   secret-key-refresh-token: ${SECRET_KEY_RT:Ty@nDzaiHc23grw3@/Tr0NgVt23Ym+145hjgRtBn9fv6y}
+image:
+  avatar-default: https://sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png

@@ -3,7 +3,6 @@ package com.julytus.EBook.service.implement;
 import java.text.ParseException;
 import java.util.concurrent.TimeUnit;
 
-import com.julytus.EBook.common.EnvVariable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -38,13 +37,18 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthServiceImpl implements AuthService {
     @Value("${DOMAIN:localhost}")
     private String domain;
-    @Value("${jwt.expiration-refresh-token}")
-    private static int expirationRefreshToken;
 
     private final JwtService jwtService;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final RedisService redisService;
     private final UserService userService;
+
+    @Value("${jwt.secret-key-refresh-token}")
+    private String secretKeyRefreshToken;
+
+    @Value("${jwt.expiration-refresh-token}")
+    private int expirationRefreshToken;
+
 
     @Override
     public SignInResponse signIn(SignInRequest request, HttpServletResponse response) {
@@ -54,7 +58,7 @@ public class AuthServiceImpl implements AuthService {
             Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            User user = userService.findByEmail(authentication.getName());
+            User user = userService.findByUsername(authentication.getName());
 
             final String accessToken = jwtService.generateAccessToken(user);
             final String refreshToken = jwtService.generateRefreshToken(user);
@@ -90,10 +94,10 @@ public class AuthServiceImpl implements AuthService {
         }
 
         String username = jwtService.extractUsername(refreshToken);
-        User user = userService.findByEmail(username);
+        User user = userService.findByUsername(username);
 
         try {
-            boolean isValidToken = jwtService.verificationToken(refreshToken, EnvVariable.getSecretKeyRefreshToken());
+            boolean isValidToken = jwtService.verificationToken(refreshToken, secretKeyRefreshToken);
             if (!isValidToken) {
                 throw new JwtAuthenticationException(ErrorCode.REFRESH_TOKEN_INVALID);
             }

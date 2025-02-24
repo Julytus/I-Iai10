@@ -11,7 +11,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
 import java.io.IOException;
-import java.util.Date;
+import java.time.Instant;
 
 @Slf4j(topic = "AUTHENTICATION-ENTRY-POINT")
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
@@ -26,13 +26,14 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
         ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .timestamp(new Date())
+                .timestamp(Instant.now())
                 .status(errorCode.getCode())
                 .error(errorCode.getMessage())
                 .path(request.getRequestURI())
                 .build();
 
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.findAndRegisterModules();
 
         response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
         response.flushBuffer();

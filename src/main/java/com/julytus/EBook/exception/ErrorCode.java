@@ -24,6 +24,12 @@ public enum ErrorCode {
     JWT_SIGNATURE_INVALID(401, "JWT signature is invalid", HttpStatus.UNAUTHORIZED),
     JWT_UNSUPPORTED(400, "JWT token is unsupported", HttpStatus.BAD_REQUEST),
     JWT_CLAIMS_EMPTY(400, "JWT claims string is empty", HttpStatus.BAD_REQUEST),
+    FILE_UPLOAD_FAILED(400, "Failed to upload file", HttpStatus.BAD_REQUEST),
+    FILE_INVALID_TYPE(400, "Invalid file type", HttpStatus.BAD_REQUEST),
+    FILE_TOO_LARGE(400, "File size exceeds maximum limit", HttpStatus.BAD_REQUEST),
+    FILE_EMPTY(400, "File is empty", HttpStatus.BAD_REQUEST),
+    STORAGE_INITIALIZATION_FAILED(500, "Failed to initialize storage system, " +
+            "Make sure MinIO, MySql is started", HttpStatus.INTERNAL_SERVER_ERROR),
     ;
 
     private final int code;

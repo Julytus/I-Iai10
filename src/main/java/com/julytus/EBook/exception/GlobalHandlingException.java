@@ -1,6 +1,7 @@
 package com.julytus.EBook.exception;
 
 import java.net.URI;
+import java.time.Instant;
 import java.util.Date;
 import java.util.EnumMap;
 import java.util.List;
@@ -44,9 +45,9 @@ public class GlobalHandlingException {
                 .toList();
 
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .timestamp(new Date())
+                .timestamp(Instant.now())
                 .status(HttpStatus.BAD_REQUEST.value())
-                .error(errors.size() > 1 ? String.valueOf(errors) : errors.get(0))
+                .error(errors.size() > 1 ? String.valueOf(errors) : errors.getFirst())
                 .path(request.getRequestURI())
                 .build();
 
@@ -71,7 +72,7 @@ public class GlobalHandlingException {
         
         ErrorCode errorCode = exception.getErrorCode();
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .timestamp(new Date())
+                .timestamp(Instant.now())
                 .status(errorCode.getCode())
                 .error(errorCode.getMessage())
                 .path(request.getRequestURI())
@@ -85,7 +86,7 @@ public class GlobalHandlingException {
             SecurityException exception, HttpServletRequest request) {
         
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .timestamp(new Date())
+                .timestamp(Instant.now())
                 .status(HttpStatus.UNAUTHORIZED.value())
                 .error("Security error: " + exception.getMessage())
                 .path(request.getRequestURI())
@@ -98,7 +99,6 @@ public class GlobalHandlingException {
     public ResponseEntity<ErrorResponse> handleGlobalException(
             Exception exception, HttpServletRequest request) {
             
-        // Log exception để debug
         log.error("Handling exception: ", exception);
         
         ErrorCode errorCode = getErrorCode(exception);
@@ -121,7 +121,7 @@ public class GlobalHandlingException {
     private ResponseEntity<ErrorResponse> buildErrorResponse(
             ErrorCode errorCode, HttpServletRequest request) {
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .timestamp(new Date())
+                .timestamp(Instant.now())
                 .status(errorCode.getCode())
                 .error(errorCode.getMessage())
                 .path(request.getRequestURI())

@@ -10,7 +10,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 
 import java.io.IOException;
-import java.util.Date;
+import java.time.Instant;
 
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     @Override
@@ -23,7 +23,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
         ErrorCode errorCode = ErrorCode.ACCESS_DINED;
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .timestamp(new Date())
+                .timestamp(Instant.now())
                 .status(errorCode.getCode())
                 .error(errorCode.getMessage())
                 .path(request.getRequestURI())

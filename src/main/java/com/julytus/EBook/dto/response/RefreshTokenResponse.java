@@ -1,14 +1,16 @@
 package com.julytus.EBook.dto.response;
 
+import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
+
 import java.io.Serializable;
 
-@Getter
 @Setter
 @Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class RefreshTokenResponse implements Serializable {
-    private String userId;
-    private String accessToken;
+    String userId;
+    String accessToken;
 }
